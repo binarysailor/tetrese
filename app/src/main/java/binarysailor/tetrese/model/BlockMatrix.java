@@ -109,4 +109,11 @@ public class BlockMatrix {
         }
         return get(x, y) == 1;
     }
+
+    public void collapseRow(int row) {
+        for (int destRow = row; destRow < m.length - 1; destRow++) {
+            System.arraycopy(m[destRow + 1], 0, m[destRow], 0, m[destRow + 1].length);
+        }
+        Arrays.fill(m[m.length - 1], (short)0);
+    }
 }

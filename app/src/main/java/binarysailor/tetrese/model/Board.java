@@ -4,6 +4,10 @@ import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.stream.IntStream;
 
 import binarysailor.tetrese.model.rotation.RotationDirection;
 
@@ -47,7 +51,30 @@ public class Board implements CollisionEnvironment {
                 fallingBlock.moveDown();
             } else {
                 fallenBlocks.add(fallingBlock);
+                collapseIfPossible();
                 createFallingBlock();
+            }
+        }
+    }
+
+    void collapseIfPossible() {
+        Set<Integer> potentialRows = new HashSet<>();
+        for (Block block : fallenBlocks) {
+            block.forEachOccupiedCell((x, y) -> potentialRows.add(y));
+        }
+        potentialRows.stream().filter(this::isRowFull).forEach(this::collapseRow);
+    }
+
+    private boolean isRowFull(int row) {
+        return IntStream.range(0, widthCells).allMatch(x -> isOccupied(x, row));
+    }
+
+    private void collapseRow(int row) {
+        for (Iterator<Block> blocks = fallenBlocks.iterator(); blocks.hasNext(); ) {
+            Block block = blocks.next();
+            block.collapseRow(row);
+            if (block.getY() >= heightCells) {
+                blocks.remove();
             }
         }
     }

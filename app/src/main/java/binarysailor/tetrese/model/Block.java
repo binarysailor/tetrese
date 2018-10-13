@@ -1,7 +1,5 @@
 package binarysailor.tetrese.model;
 
-import android.util.Log;
-
 import java.util.Objects;
 import java.util.function.BiConsumer;
 
@@ -72,6 +70,25 @@ public class Block {
 
     public void moveRight() {
         x++;
+    }
+
+    public void collapseRow(int boardRow) {
+        if (boardRow >= y && boardRow < y + matrix.side()) {
+            // the row that gets collapsed is actually cutting through this block
+            matrix.collapseRow(boardRow - y);
+            y++;
+        } else if (boardRow > y) {
+            // the row that gets collapsed is disjoint with this block, but it's below, so this block moves down one cell
+            y++;
+        }
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
     }
 
     @Override
