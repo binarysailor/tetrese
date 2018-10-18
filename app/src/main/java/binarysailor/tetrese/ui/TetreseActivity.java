@@ -7,7 +7,7 @@ import android.view.WindowManager;
 
 import binarysailor.tetrese.R;
 
-public class TetrisActivity extends Activity {
+public class TetreseActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

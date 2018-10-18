@@ -1,11 +1,9 @@
 package binarysailor.tetrese.ui;
 
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
 import binarysailor.tetrese.model.Board;
-import binarysailor.tetrese.model.rotation.RotationDirection;
 
 class TouchListener implements View.OnTouchListener {
 
@@ -17,8 +15,6 @@ class TouchListener implements View.OnTouchListener {
 
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
-        Log.d("Tetrese", "onTouch received");
-
         if (motionEvent.getActionMasked() != MotionEvent.ACTION_DOWN) {
             return false;
         }
