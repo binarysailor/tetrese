@@ -20,17 +20,19 @@ public class Board implements CollisionEnvironment {
 
     private int score;
 
+    private GameLifecycle lifecycle;
     private final BlockFactory blockFactory;
 
     private final CollisionDetector collisionDetector;
 
     private long lastTick = System.nanoTime();
 
-    public Board(int widthCells, int heightCells, BlockFactory blockFactory) {
+    public Board(int widthCells, int heightCells, BlockFactory blockFactory, GameLifecycle lifecycle) {
         this.widthCells = widthCells;
         this.heightCells = heightCells;
         this.blockFactory = blockFactory;
         this.collisionDetector = new CollisionDetector(this);
+        this.lifecycle = lifecycle;
     }
 
     public void createFallingBlock() {
@@ -38,10 +40,12 @@ public class Board implements CollisionEnvironment {
     }
 
     public synchronized void update() {
-        long currentTime = System.nanoTime();
-        if (currentTime - lastTick > interval * 1000 * 1000) {
-            descend();
-            lastTick = currentTime;
+        if (lifecycle.getState() == GameLifecycle.State.PLAYING) {
+            long currentTime = System.nanoTime();
+            if (currentTime - lastTick > interval * 1000 * 1000) {
+                descend();
+                lastTick = currentTime;
+            }
         }
     }
 
@@ -53,8 +57,22 @@ public class Board implements CollisionEnvironment {
                 fallenBlocks.add(fallingBlock);
                 collapseIfPossible();
                 createFallingBlock();
+                if (collisionDetector.inCollision(fallingBlock)) {
+                    gameOver();
+                }
             }
         }
+    }
+
+    public void gameOver() {
+        lifecycle.gameOver();
+    }
+
+    public void startGame() {
+        lifecycle.restartGame();
+        fallenBlocks.clear();
+        score = 0;
+        createFallingBlock();
     }
 
     void collapseIfPossible() {

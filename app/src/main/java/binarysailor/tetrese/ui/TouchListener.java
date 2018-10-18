@@ -4,17 +4,30 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import binarysailor.tetrese.model.Board;
+import binarysailor.tetrese.model.GameLifecycle;
 
 class TouchListener implements View.OnTouchListener {
 
-    Board board;
+    private final Board board;
+    private final GameLifecycle lifecycle;
 
-    public TouchListener(Board board) {
+    public TouchListener(Board board, GameLifecycle lifecycle) {
         this.board = board;
+        this.lifecycle = lifecycle;
     }
 
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
+        switch (lifecycle.getState()) {
+            case PLAYING:
+                return onTouchPlaying(view, motionEvent);
+            case GAME_OVER:
+                return onTouchGameOver(view, motionEvent);
+        }
+        return true;
+    }
+
+    private boolean onTouchPlaying(View view, MotionEvent motionEvent) {
         if (motionEvent.getActionMasked() != MotionEvent.ACTION_DOWN) {
             return false;
         }
@@ -43,6 +56,11 @@ class TouchListener implements View.OnTouchListener {
             }
         }
 
+        return true;
+    }
+
+    private boolean onTouchGameOver(View view, MotionEvent motionEvent) {
+        board.startGame();
         return true;
     }
 }

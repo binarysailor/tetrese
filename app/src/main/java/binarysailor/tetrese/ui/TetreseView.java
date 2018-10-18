@@ -10,17 +10,21 @@ import android.view.SurfaceView;
 
 import binarysailor.tetrese.model.BlockFactory;
 import binarysailor.tetrese.model.Board;
+import binarysailor.tetrese.model.GameLifecycle;
 
 public class TetreseView extends SurfaceView implements SurfaceHolder.Callback {
 
-    private TetreseThread tetreseThread;
+    private final GameLifecycle lifecycle;
+    private final TetreseThread tetreseThread;
     private Board board;
-    private TetreseRenderer renderer;
+    private BoardRenderer boardRenderer;
+    private GameOverRenderer gameOverRenderer;
 
     public TetreseView(Context context, AttributeSet attrs) {
         super(context, attrs);
         SurfaceHolder holder = getHolder();
         holder.addCallback(this);
+        lifecycle = new GameLifecycle();
         tetreseThread = new TetreseThread(holder);
         setFocusable(true);
     }
@@ -28,7 +32,7 @@ public class TetreseView extends SurfaceView implements SurfaceHolder.Callback {
     @Override
     public void surfaceCreated(SurfaceHolder surfaceHolder) {
         initBoard(surfaceHolder.getSurfaceFrame());
-        setOnTouchListener(new TouchListener(board));
+        setOnTouchListener(new TouchListener(board, lifecycle));
         tetreseThread.setRunning(true);
         tetreseThread.start();
     }
@@ -55,17 +59,26 @@ public class TetreseView extends SurfaceView implements SurfaceHolder.Callback {
     @Override
     public void draw(Canvas canvas) {
         super.draw(canvas);
-        renderer.render(canvas);
+        switch (lifecycle.getState()) {
+            case PLAYING:
+                boardRenderer.render(canvas);
+                break;
+            case GAME_OVER:
+                boardRenderer.render(canvas);
+                gameOverRenderer.render(canvas);
+                break;
+        }
     }
 
     private void initBoard(Rect surfaceFrame) {
         Dimensions dimensions = Dimensions.calculate(surfaceFrame);
 
         board = new Board(
-                dimensions.getWidthCells(), dimensions.getHeightCells(), new BlockFactory());
-        board.createFallingBlock();
+                dimensions.getWidthCells(), dimensions.getHeightCells(), new BlockFactory(), lifecycle);
+        boardRenderer = new BoardRenderer(board, dimensions);
+        gameOverRenderer = new GameOverRenderer();
 
-        renderer = new TetreseRenderer(board, dimensions);
+        board.startGame();
     }
 
     class TetreseThread extends Thread {
@@ -85,7 +98,9 @@ public class TetreseView extends SurfaceView implements SurfaceHolder.Callback {
                 try {
                     canvas = surfaceHolder.lockCanvas();
                     if (canvas != null) {
-                        updateBoard();
+                        if (lifecycle.getState() == GameLifecycle.State.PLAYING) {
+                            updateBoard();
+                        }
                         draw(canvas);
                     }
                 } finally {

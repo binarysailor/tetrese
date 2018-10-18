@@ -7,7 +7,7 @@ import android.graphics.Typeface;
 
 import binarysailor.tetrese.model.Board;
 
-class TetreseRenderer {
+class BoardRenderer {
     private Board board;
     private Dimensions dimensions;
 
@@ -17,7 +17,7 @@ class TetreseRenderer {
 
     private CanvasGridAdapter grid;
 
-    TetreseRenderer(Board board, Dimensions dimensions) {
+    BoardRenderer(Board board, Dimensions dimensions) {
         this.board = board;
         this.grid = new CanvasGridAdapter(board);
         this.dimensions = dimensions;

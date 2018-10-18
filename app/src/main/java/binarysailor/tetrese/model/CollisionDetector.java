@@ -36,7 +36,7 @@ public class CollisionDetector {
         return !transformAndCheckCollision(block, b -> b.rotate(RotationDirection.COUNTERCLOCKWISE));
     }
 
-    private boolean inCollision(Block block) {
+    public boolean inCollision(Block block) {
         boolean[] collided = new boolean[1];
         block.forEachOccupiedCell((x, y) -> {
             if (x < 0 || x >= environment.getWidthCells()) {

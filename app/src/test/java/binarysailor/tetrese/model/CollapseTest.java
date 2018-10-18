@@ -9,7 +9,7 @@ public class CollapseTest {
 
     @Before
     public void setup() {
-        board = new Board(4, 8, null);
+        board = new Board(4, 8, null, new GameLifecycle());
     }
 
     @Test
