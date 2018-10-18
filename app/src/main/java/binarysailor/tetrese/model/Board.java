@@ -18,6 +18,8 @@ public class Board implements CollisionEnvironment {
     private Block fallingBlock;
     private final Collection<Block> fallenBlocks = new ArrayList<>();
 
+    private int score;
+
     private final BlockFactory blockFactory;
 
     private final CollisionDetector collisionDetector;
@@ -73,8 +75,10 @@ public class Board implements CollisionEnvironment {
             block.collapseRow(row);
             if (block.getY() >= heightCells) {
                 blocks.remove();
+                score += 10;
             }
         }
+        score += 100;
     }
 
     public Block getFallingBlock() {
@@ -128,5 +132,9 @@ public class Board implements CollisionEnvironment {
     @Override
     public boolean isOccupied(int x, int y) {
         return fallenBlocks.stream().anyMatch(b -> b.occupies(x, y));
+    }
+
+    public int getScore() {
+        return score;
     }
 }

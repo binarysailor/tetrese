@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -55,6 +56,8 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
         private volatile boolean running;
 
         private Paint backgroundPaint;
+        private Paint borderPaint;
+        private Paint textPaint;
 
         private Dimensions dimensions;
         private Board board;
@@ -64,8 +67,14 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
         TheThread(SurfaceHolder surfaceHolder, Context context) {
             this.surfaceHolder = surfaceHolder;
             this.context = context;
-            this.backgroundPaint = new Paint();
-            backgroundPaint.setARGB(255, 60, 60, 90);
+            backgroundPaint = new Paint();
+            backgroundPaint.setARGB(255, 85, 4, 44);
+            borderPaint = new Paint();
+            borderPaint.setARGB(255, 0, 0, 0);
+            textPaint = new Paint();
+            textPaint.setARGB(255, 255, 220, 220);
+            textPaint.setTextSize(60);
+            textPaint.setTypeface(Typeface.MONOSPACE);
         }
 
         @Override
@@ -89,6 +98,10 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
         void draw(Canvas canvas) {
             Rect clipBounds = canvas.getClipBounds();
             canvas.drawRect(clipBounds, backgroundPaint);
+            canvas.drawRect(0, dimensions.getCellSize() * dimensions.getHeightCells() + 1,
+                    dimensions.getCellSize() * dimensions.getWidthCells(), clipBounds.bottom,
+                    borderPaint);
+            canvas.drawText("Score: " + board.getScore(), 10, clipBounds.bottom - 10, textPaint);
 
             grid.setCanvas(canvas);
             synchronized (board) {
