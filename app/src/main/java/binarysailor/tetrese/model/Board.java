@@ -10,7 +10,7 @@ import java.util.stream.IntStream;
 import binarysailor.tetrese.model.rotation.RotationDirection;
 
 public class Board implements CollisionEnvironment {
-    private int interval = 200; // ms
+    private int interval = 300; // ms
 
     private int widthCells;
     private int heightCells;
