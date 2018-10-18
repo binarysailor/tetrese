@@ -78,7 +78,7 @@ public class Block {
             matrix.collapseRow(boardRow - y);
             y++;
         } else if (boardRow > y) {
-            // the row that gets collapsed is disjoint with this block, but it's below, so this block moves down one cell
+            // the row that gets collapsed is below this block, so this block moves down one cell
             y++;
         }
     }

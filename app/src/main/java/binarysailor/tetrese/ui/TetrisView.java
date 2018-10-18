@@ -56,9 +56,8 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
 
         private Paint backgroundPaint;
 
+        private Dimensions dimensions;
         private Board board;
-
-        private Integer width, height;
 
         private CanvasGridAdapter grid;
 
@@ -88,7 +87,9 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
         }
 
         void draw(Canvas canvas) {
-            canvas.drawRect(canvas.getClipBounds(), backgroundPaint);
+            Rect clipBounds = canvas.getClipBounds();
+            canvas.drawRect(clipBounds, backgroundPaint);
+
             grid.setCanvas(canvas);
             synchronized (board) {
                 board.getFallingBlock().draw(grid);
@@ -102,19 +103,15 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
 
         void surfaceChanged(int format, int width, int height) {
             Log.d("Tetris", String.format("surfaceChanged: %d, %d, %d", format, width, height ));
-            this.width = width;
-            this.height = height;
         }
 
         public void createBoard(Rect surfaceFrame) {
-            int widthCells = 18;
-            int cellSize = surfaceFrame.width() / widthCells;
-            int heightCells = Math.min(surfaceFrame.height() / cellSize, 16 * widthCells / 9);
-            board = new Board(widthCells, heightCells, new BlockFactory());
+            dimensions = Dimensions.calculate(surfaceFrame);
+
+            board = new Board(
+                    dimensions.getWidthCells(), dimensions.getHeightCells(), new BlockFactory());
             grid = new CanvasGridAdapter(board);
             board.createFallingBlock();
         }
     }
-
-
 }

@@ -1,7 +1,5 @@
 package binarysailor.tetrese.model;
 
-import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -40,12 +38,12 @@ public class Board implements CollisionEnvironment {
     public synchronized void update() {
         long currentTime = System.nanoTime();
         if (currentTime - lastTick > interval * 1000 * 1000) {
-            fall();
+            descend();
             lastTick = currentTime;
         }
     }
 
-    private void fall() {
+    private void descend() {
         if (fallingBlock != null) {
             if (collisionDetector.canMoveDown(fallingBlock)) {
                 fallingBlock.moveDown();
