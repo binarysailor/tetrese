@@ -78,7 +78,7 @@ public class Board implements CollisionEnvironment {
     void collapseIfPossible() {
         Set<Integer> potentialRows = new HashSet<>();
         for (Block block : fallenBlocks) {
-            block.forEachOccupiedCell((x, y) -> potentialRows.add(y));
+            block.forEachOccupiedCell((x, y, color) -> potentialRows.add(y));
         }
         potentialRows.stream().filter(this::isRowFull).forEach(this::collapseRow);
     }

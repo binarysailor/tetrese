@@ -34,16 +34,12 @@ public class Block {
         this.matrix.copyFrom(other.matrix);
     }
 
-    public void draw(Grid target) {
-        forEachOccupiedCell((xc, yc) -> target.drawCell(xc, yc, color));
-    }
-
     public void rotate(RotationDirection direction) {
         rotator.rotate(matrix, direction);
     }
 
-    public void forEachOccupiedCell(BiConsumer<Integer, Integer> consumer) {
-        matrix.forEachOccupiedCell((xc, yc) -> consumer.accept(x + xc, y + yc));
+    public void forEachOccupiedCell(CellConsumer consumer) {
+        matrix.forEachOccupiedCell((xc, yc) -> consumer.accept(x + xc, y + yc, color));
     }
 
     public boolean occupies(int x, int y) {
@@ -109,5 +105,7 @@ public class Block {
         return Objects.hash(x, y, matrix.hashCode());
     }
 
-
+    public interface CellConsumer {
+        void accept(int x, int y, int color);
+    }
 }

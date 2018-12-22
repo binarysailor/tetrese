@@ -5,27 +5,27 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 
+import binarysailor.tetrese.model.Block;
 import binarysailor.tetrese.model.Board;
 
 class BoardRenderer {
     private Board board;
     private Dimensions dimensions;
 
+    private Paint blockPaint;
     private Paint backgroundPaint;
     private Paint borderPaint;
     private Paint textPaint;
 
-    private CanvasGridAdapter grid;
-
     BoardRenderer(Board board, Dimensions dimensions) {
         this.board = board;
-        this.grid = new CanvasGridAdapter(board);
         this.dimensions = dimensions;
 
         initGraphicsObjects();
     }
 
     private void initGraphicsObjects() {
+        blockPaint = new Paint();
         backgroundPaint = new Paint();
         backgroundPaint.setARGB(255, 85, 4, 44);
         borderPaint = new Paint();
@@ -44,8 +44,19 @@ class BoardRenderer {
                 borderPaint);
         canvas.drawText("Score: " + board.getScore(), 10, clipBounds.bottom - 10, textPaint);
 
-        grid.setCanvas(canvas);
-        board.getFallingBlock().draw(grid);
-        board.getFallenBlocks().forEach(b -> b.draw(grid));
+        drawBlock(board.getFallingBlock(), canvas);
+        board.getFallenBlocks().forEach(b -> drawBlock(b, canvas));
+    }
+
+    private void drawBlock(Block block, Canvas target) {
+        block.forEachOccupiedCell((x, y, color) -> {
+            drawCell(x, y, color, target);
+        });
+    }
+
+    private void drawCell(int x, int y, int color, Canvas target) {
+        float cellSize = (float) target.getWidth() / board.getWidthCells();
+        blockPaint.setColor(color);
+        target.drawRect(x * cellSize + 1, y * cellSize + 1, (x + 1) * cellSize - 2, (y + 1) * cellSize - 2, blockPaint);
     }
 }
