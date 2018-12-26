@@ -15,7 +15,7 @@ public class Board implements CollisionEnvironment {
     private int widthCells;
     private int heightCells;
 
-    private Block fallingBlock;
+    private Block fallingBlock, nextFallingBlock;
     private final Collection<Block> fallenBlocks = new ArrayList<>();
 
     private int score;
@@ -36,7 +36,12 @@ public class Board implements CollisionEnvironment {
     }
 
     public void createFallingBlock() {
-        fallingBlock = blockFactory.createRandomBlock(widthCells - 4);
+        if (nextFallingBlock != null) {
+            fallingBlock = nextFallingBlock;
+        } else {
+            fallingBlock = blockFactory.createRandomBlock(widthCells - 4);
+        }
+        nextFallingBlock = blockFactory.createRandomBlock(widthCells - 4);
     }
 
     public synchronized void update() {
@@ -101,6 +106,10 @@ public class Board implements CollisionEnvironment {
 
     public Block getFallingBlock() {
         return fallingBlock;
+    }
+
+    public Block getNextFallingBlock() {
+        return nextFallingBlock;
     }
 
     public synchronized boolean tryMoveLeft() {
