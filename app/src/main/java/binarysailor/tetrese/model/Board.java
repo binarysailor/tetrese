@@ -5,11 +5,14 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import binarysailor.tetrese.model.rotation.RotationDirection;
 
 public class Board implements CollisionEnvironment {
+    private static final int[] COLLAPSE_COUNT_SCORING = {0, 40, 100, 300, 1200};
+
     private int interval = 400; // ms
 
     private int widthCells;
@@ -89,7 +92,11 @@ public class Board implements CollisionEnvironment {
         for (Block block : fallenBlocks) {
             block.forEachOccupiedCell((x, y, color) -> potentialRows.add(y));
         }
-        potentialRows.stream().filter(this::isRowFull).forEach(this::collapseRow);
+        Set<Integer> rowsIndexesToCollapse =  potentialRows.stream().filter(this::isRowFull).collect(Collectors.toSet());
+        int collapseCount = rowsIndexesToCollapse.size();
+        int bonus = COLLAPSE_COUNT_SCORING[Math.min(collapseCount, COLLAPSE_COUNT_SCORING.length - 1)];
+        rowsIndexesToCollapse.forEach(this::collapseRow);
+        score += bonus;
     }
 
     private boolean isRowFull(int row) {
@@ -102,10 +109,8 @@ public class Board implements CollisionEnvironment {
             block.collapseRow(row);
             if (block.getY() >= heightCells) {
                 blocks.remove();
-                score += 10;
             }
         }
-        score += 100;
     }
 
     public Block getFallingBlock() {
@@ -150,9 +155,13 @@ public class Board implements CollisionEnvironment {
 
     public void dropFallingBlock() {
         boolean d;
+        int distance = 0;
         do {
             d = descend();
+            distance++;
         } while (d);
+
+        score += distance + 1;
     }
 
     public Collection<Block> getFallenBlocks() {
