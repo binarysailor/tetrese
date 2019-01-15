@@ -32,7 +32,7 @@ public class TetreseView extends SurfaceView implements SurfaceHolder.Callback {
     @Override
     public void surfaceCreated(SurfaceHolder surfaceHolder) {
         initBoard(surfaceHolder.getSurfaceFrame());
-        setOnTouchListener(new TouchListener(board, lifecycle));
+        setOnTouchListener(new TouchListener(this, board, lifecycle));
         tetreseThread.setRunning(true);
         tetreseThread.start();
     }
@@ -68,6 +68,14 @@ public class TetreseView extends SurfaceView implements SurfaceHolder.Callback {
                 gameOverRenderer.render(canvas);
                 break;
         }
+    }
+
+    public boolean isCommunicationArea(float x, float y) {
+        return boardRenderer.isCommunicationArea(x, y);
+    }
+
+    public BoardQuarter resolveBoardQuarter(float x, float y) {
+        return boardRenderer.resolveBoardQuarter(x, y);
     }
 
     private void initBoard(Rect surfaceFrame) {

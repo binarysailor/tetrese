@@ -7,6 +7,7 @@ public class Dimensions {
     private static final int WIDTH_CELLS = 10;
 
     private int cellSize, heightCells;
+    private int widthPx, heightPx;
 
     static Dimensions calculate(Rect frame) {
 
@@ -23,6 +24,8 @@ public class Dimensions {
         Dimensions dimensions = new Dimensions();
         dimensions.cellSize = cellSize;
         dimensions.heightCells = heightCells;
+        dimensions.widthPx = dimensions.getWidthCells() * cellSize;
+        dimensions.heightPx = heightCells * cellSize;
 
         return dimensions;
     }
@@ -37,5 +40,13 @@ public class Dimensions {
 
     public int getCellSize() {
         return cellSize;
+    }
+
+    public int getWidthPx() {
+        return widthPx;
+    }
+
+    public int getHeightPx() {
+        return heightPx;
     }
 }

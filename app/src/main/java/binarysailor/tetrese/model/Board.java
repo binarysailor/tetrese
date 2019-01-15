@@ -10,7 +10,7 @@ import java.util.stream.IntStream;
 import binarysailor.tetrese.model.rotation.RotationDirection;
 
 public class Board implements CollisionEnvironment {
-    private int interval = 300; // ms
+    private int interval = 400; // ms
 
     private int widthCells;
     private int heightCells;
@@ -54,10 +54,11 @@ public class Board implements CollisionEnvironment {
         }
     }
 
-    private void descend() {
+    private boolean descend() {
         if (fallingBlock != null) {
             if (collisionDetector.canMoveDown(fallingBlock)) {
                 fallingBlock.moveDown();
+                return true;
             } else {
                 fallenBlocks.add(fallingBlock);
                 collapseIfPossible();
@@ -65,8 +66,11 @@ public class Board implements CollisionEnvironment {
                 if (collisionDetector.inCollision(fallingBlock)) {
                     gameOver();
                 }
+                return false;
             }
         }
+
+        return false;
     }
 
     public void gameOver() {
@@ -144,6 +148,13 @@ public class Board implements CollisionEnvironment {
         return true;
     }
 
+    public void dropFallingBlock() {
+        boolean d;
+        do {
+            d = descend();
+        } while (d);
+    }
+
     public Collection<Block> getFallenBlocks() {
         return fallenBlocks;
     }
@@ -164,4 +175,5 @@ public class Board implements CollisionEnvironment {
     public int getScore() {
         return score;
     }
+
 }

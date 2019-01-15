@@ -10,14 +10,19 @@ class TouchListener implements View.OnTouchListener {
 
     private final Board board;
     private final GameLifecycle lifecycle;
+    private final TetreseView tetreseView;
 
-    public TouchListener(Board board, GameLifecycle lifecycle) {
+    public TouchListener(TetreseView view, Board board, GameLifecycle lifecycle) {
         this.board = board;
         this.lifecycle = lifecycle;
+        this.tetreseView = view;
     }
 
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
+        if (motionEvent.getAction() != MotionEvent.ACTION_DOWN) {
+            return false;
+        }
         switch (lifecycle.getState()) {
             case PLAYING:
                 return onTouchPlaying(view, motionEvent);
@@ -28,32 +33,25 @@ class TouchListener implements View.OnTouchListener {
     }
 
     private boolean onTouchPlaying(View view, MotionEvent motionEvent) {
-        if (motionEvent.getActionMasked() != MotionEvent.ACTION_DOWN) {
-            return false;
-        }
-        if (motionEvent.getPointerCount() > 1) {
-            return false;
-        }
 
         float x = motionEvent.getX(0);
         float y = motionEvent.getY(0);
 
-        float distLeft = x;
-        float distRight = view.getWidth() - x;
-        float distTop = y;
+        if (tetreseView.isCommunicationArea(x, y)) {
+            board.dropFallingBlock();
+            return true;
+        }
 
-        if (distLeft < distRight) {
-            if (distLeft < distTop) {
-                board.tryMoveLeft();
-            } else {
+        BoardQuarter quarter = tetreseView.resolveBoardQuarter(x, y);
+        switch (quarter) {
+            case NORTH:
                 board.tryRotateClockwise();
-            }
-        } else {
-            if (distRight < distTop) {
+                break;
+            case EAST:
                 board.tryMoveRight();
-            } else {
-                board.tryRotateClockwise();
-            }
+                break;
+            case WEST:
+                board.tryMoveLeft();
         }
 
         return true;

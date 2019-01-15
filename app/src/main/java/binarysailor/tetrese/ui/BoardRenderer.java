@@ -1,10 +1,10 @@
 package binarysailor.tetrese.ui;
 
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
+import android.util.Log;
 
 import binarysailor.tetrese.model.Block;
 import binarysailor.tetrese.model.Board;
@@ -54,9 +54,7 @@ class BoardRenderer {
     }
 
     private void drawBlock(Block block, Canvas target) {
-        block.forEachOccupiedCell((x, y, color) -> {
-            drawCell(x, y, color, target);
-        });
+        block.forEachOccupiedCell((x, y, color) -> drawCell(x, y, color, target));
     }
 
     private void drawCell(int x, int y, int color, Canvas target) {
@@ -88,5 +86,36 @@ class BoardRenderer {
                         blockPaint);
             });
         }
+    }
+
+    boolean isCommunicationArea(float x, float y) {
+        return y > dimensions.getCellSize() * dimensions.getHeightCells();
+    }
+
+    BoardQuarter resolveBoardQuarter(float x, float y) {
+        if (isCommunicationArea(x, y)) {
+            return null;
+        }
+
+        float ratio = (float)dimensions.getHeightPx() / dimensions.getWidthPx();
+        BoardQuarter result;
+        if (x * ratio > y) {
+            // top-right half
+            if (dimensions.getHeightPx() - x * ratio > y) {
+                result = BoardQuarter.NORTH;
+            } else {
+                result = BoardQuarter.EAST;
+            }
+        } else {
+            // bottom-left half
+            if (dimensions.getHeightPx() - x * ratio > y) {
+                result = BoardQuarter.WEST;
+            } else {
+                result = BoardQuarter.SOUTH;
+            }
+        }
+
+        Log.d("resolveBoardQuarter", String.format("Ratio: %.2f. (%.1f, %.1f) resolved to %s", ratio, x, y, result));
+        return result;
     }
 }
