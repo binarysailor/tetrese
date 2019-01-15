@@ -1,6 +1,7 @@
 package binarysailor.tetrese.ui;
 
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
@@ -60,12 +61,25 @@ class BoardRenderer {
     private void drawCell(int x, int y, int color, Canvas target) {
         float cellSize = (float) target.getWidth() / board.getWidthCells();
         blockPaint.setColor(color);
-        target.drawRect(
-                x * cellSize + 1,
-                y * cellSize + 1,
-                (x + 1) * cellSize - 2,
-                (y + 1) * cellSize - 2,
-                blockPaint);
+        float top = y * cellSize + 1;
+        float bottom = (y + 1) * cellSize - 2;
+        float left = x * cellSize + 1;
+        float right = (x + 1) * cellSize - 2;
+        target.drawRect(left, top, right, bottom, blockPaint);
+
+        int highlightThickness = 7;
+        // highlight
+        blockPaint.setARGB(100,255, 255, 255);
+        for (int i = 0; i < highlightThickness; i++) {
+            target.drawLine(left, top + i, right, top + i, blockPaint);
+            target.drawLine(left + i, top + highlightThickness, left + i, bottom, blockPaint);
+        }
+        // shadow
+        blockPaint.setARGB(100,0, 0, 0);
+        for (int i = 0; i < highlightThickness; i++) {
+            target.drawLine(right - i, top + highlightThickness, right - i, bottom, blockPaint);
+            target.drawLine(left + highlightThickness, bottom - i, right, bottom - i, blockPaint);
+        }
     }
 
     private void drawNextBlockPreview(Canvas target) {
