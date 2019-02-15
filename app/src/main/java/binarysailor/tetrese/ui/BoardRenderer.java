@@ -48,10 +48,12 @@ class BoardRenderer {
         canvas.drawText("Score: " + board.getScore(), 10, textY, textPaint);
         canvas.drawText("Next: ", clipBounds.width() - 300, textY, textPaint);
 
-        drawBlock(board.getFallingBlock(), canvas);
-        board.getFallenBlocks().forEach(b -> drawBlock(b, canvas));
+        synchronized (board) {
+            drawBlock(board.getFallingBlock(), canvas);
+            board.getFallenBlocks().forEach(b -> drawBlock(b, canvas));
 
-        drawNextBlockPreview(canvas);
+            drawNextBlockPreview(canvas);
+        }
     }
 
     private void drawBlock(Block block, Canvas target) {

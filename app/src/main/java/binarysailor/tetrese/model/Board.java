@@ -153,7 +153,7 @@ public class Board implements CollisionEnvironment {
         return true;
     }
 
-    public void dropFallingBlock() {
+    public synchronized void dropFallingBlock() {
         boolean d;
         int distance = 0;
         do {
