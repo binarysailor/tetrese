@@ -5,34 +5,60 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
 
-import binarysailor.tetrese.model.BlockFactory;
-import binarysailor.tetrese.model.Board;
 import binarysailor.tetrese.model.GameLifecycle;
+import binarysailor.tetrese.ui.board.BoardScene;
+import binarysailor.tetrese.ui.menu.MenuScene;
 
-public class TetreseView extends SurfaceView implements SurfaceHolder.Callback {
+public class TetreseView extends SurfaceView implements SurfaceHolder.Callback, GameLifecycle.GameLifecycleListener {
 
     private final GameLifecycle lifecycle;
     private final TetreseThread tetreseThread;
-    private Board board;
-    private BoardRenderer boardRenderer;
-    private GameOverRenderer gameOverRenderer;
+
+    private Scene boardScene, menuScene;
+    private Scene currentScene;
 
     public TetreseView(Context context, AttributeSet attrs) {
         super(context, attrs);
         SurfaceHolder holder = getHolder();
         holder.addCallback(this);
+
         lifecycle = new GameLifecycle();
+        lifecycle.registerListener(this);
+
         tetreseThread = new TetreseThread(holder);
+
         setFocusable(true);
     }
 
     @Override
+    public void stateChanging(GameLifecycle.State from, GameLifecycle.State to) {
+        switch (to) {
+            case MENU_NO_GAME:
+            case MENU_PAUSED_GAME:
+                currentScene = menuScene;
+                break;
+            case PLAYING:
+                currentScene = boardScene;
+                break;
+            case GAME_OVER:
+                currentScene = boardScene;
+                break;
+        }
+    }
+
+    @Override
     public void surfaceCreated(SurfaceHolder surfaceHolder) {
-        initBoard(surfaceHolder.getSurfaceFrame());
-        setOnTouchListener(new TouchListener(this, board, lifecycle));
+        initScenes(surfaceHolder.getSurfaceFrame());
+
+        setOnTouchListener((view, motionEvent) -> {
+            return currentScene.onTouch(view, motionEvent);
+        });
+
         tetreseThread.setRunning(true);
         tetreseThread.start();
     }
@@ -52,41 +78,19 @@ public class TetreseView extends SurfaceView implements SurfaceHolder.Callback {
         }
     }
 
-    public void updateBoard() {
-        board.update();
-    }
-
     @Override
     public void draw(Canvas canvas) {
         super.draw(canvas);
-        switch (lifecycle.getState()) {
-            case PLAYING:
-                boardRenderer.render(canvas);
-                break;
-            case GAME_OVER:
-                boardRenderer.render(canvas);
-                gameOverRenderer.render(canvas);
-                break;
-        }
+        currentScene.draw(canvas);
     }
 
-    public boolean isCommunicationArea(float x, float y) {
-        return boardRenderer.isCommunicationArea(x, y);
-    }
-
-    public BoardQuarter resolveBoardQuarter(float x, float y) {
-        return boardRenderer.resolveBoardQuarter(x, y);
-    }
-
-    private void initBoard(Rect surfaceFrame) {
+    private void initScenes(Rect surfaceFrame) {
         Dimensions dimensions = Dimensions.calculate(surfaceFrame);
 
-        board = new Board(
-                dimensions.getWidthCells(), dimensions.getHeightCells(), new BlockFactory(), lifecycle);
-        boardRenderer = new BoardRenderer(board, dimensions);
-        gameOverRenderer = new GameOverRenderer();
+        this.boardScene = new BoardScene(dimensions, lifecycle);
+        this.menuScene = new MenuScene(dimensions, lifecycle);
 
-        board.startGame();
+        lifecycle.openMenu();
     }
 
     class TetreseThread extends Thread {
@@ -106,10 +110,8 @@ public class TetreseView extends SurfaceView implements SurfaceHolder.Callback {
                 try {
                     canvas = surfaceHolder.lockCanvas();
                     if (canvas != null) {
-                        if (lifecycle.getState() == GameLifecycle.State.PLAYING) {
-                            updateBoard();
-                        }
-                        draw(canvas);
+                        currentScene.update();
+                        currentScene.draw(canvas);
                     }
                 } finally {
                     if (canvas != null) {

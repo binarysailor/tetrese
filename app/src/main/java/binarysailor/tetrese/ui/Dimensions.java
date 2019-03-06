@@ -6,6 +6,7 @@ public class Dimensions {
 
     private static final int WIDTH_CELLS = 10;
 
+    private Rect surfaceRect;
     private int cellSize, heightCells;
     private int widthPx, heightPx;
 
@@ -22,12 +23,17 @@ public class Dimensions {
         }
 
         Dimensions dimensions = new Dimensions();
+        dimensions.surfaceRect = frame;
         dimensions.cellSize = cellSize;
         dimensions.heightCells = heightCells;
         dimensions.widthPx = dimensions.getWidthCells() * cellSize;
         dimensions.heightPx = heightCells * cellSize;
 
         return dimensions;
+    }
+
+    public Rect getSurfaceRect() {
+        return surfaceRect;
     }
 
     public int getWidthCells() {

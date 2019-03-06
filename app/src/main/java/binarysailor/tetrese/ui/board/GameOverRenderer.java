@@ -1,4 +1,4 @@
-package binarysailor.tetrese.ui;
+package binarysailor.tetrese.ui.board;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;

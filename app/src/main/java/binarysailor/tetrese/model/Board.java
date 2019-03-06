@@ -67,7 +67,7 @@ public class Board implements CollisionEnvironment {
                 collapseIfPossible();
                 createFallingBlock();
                 if (collisionDetector.inCollision(fallingBlock)) {
-                    gameOver();
+                    lifecycle.gameOver();
                 }
                 return false;
             }
@@ -76,12 +76,7 @@ public class Board implements CollisionEnvironment {
         return false;
     }
 
-    public void gameOver() {
-        lifecycle.gameOver();
-    }
-
-    public void startGame() {
-        lifecycle.restartGame();
+    public void initialize() {
         fallenBlocks.clear();
         score = 0;
         createFallingBlock();

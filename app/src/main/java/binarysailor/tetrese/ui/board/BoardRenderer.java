@@ -1,7 +1,6 @@
-package binarysailor.tetrese.ui;
+package binarysailor.tetrese.ui.board;
 
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
@@ -9,33 +8,30 @@ import android.util.Log;
 
 import binarysailor.tetrese.model.Block;
 import binarysailor.tetrese.model.Board;
+import binarysailor.tetrese.ui.Dimensions;
 
 class BoardRenderer {
-    private Board board;
-    private Dimensions dimensions;
+    private final Board board;
+    private final Dimensions dimensions;
 
-    private Paint blockPaint;
-    private Paint backgroundPaint;
-    private Paint borderPaint;
-    private Paint textPaint;
+    private final Paint blockPaint;
+    private final Paint backgroundPaint;
+    private final Paint borderPaint;
+    private final Paint textPaint;
 
     BoardRenderer(Board board, Dimensions dimensions) {
         this.board = board;
         this.dimensions = dimensions;
 
-        initGraphicsObjects();
-    }
-
-    private void initGraphicsObjects() {
-        blockPaint = new Paint();
-        backgroundPaint = new Paint();
-        backgroundPaint.setARGB(255, 85, 4, 44);
-        borderPaint = new Paint();
-        borderPaint.setARGB(255, 0, 0, 0);
-        textPaint = new Paint();
-        textPaint.setARGB(255, 255, 220, 220);
-        textPaint.setTextSize(60);
-        textPaint.setTypeface(Typeface.MONOSPACE);
+        this.blockPaint = new Paint();
+        this.backgroundPaint = new Paint();
+        this.backgroundPaint.setARGB(255, 85, 4, 44);
+        this.borderPaint = new Paint();
+        this.borderPaint.setARGB(255, 0, 0, 0);
+        this.textPaint = new Paint();
+        this.textPaint.setARGB(255, 255, 220, 220);
+        this.textPaint.setTextSize(60);
+        this.textPaint.setTypeface(Typeface.MONOSPACE);
     }
 
     void render(Canvas canvas) {
@@ -49,7 +45,9 @@ class BoardRenderer {
         canvas.drawText("Next: ", clipBounds.width() - 300, textY, textPaint);
 
         synchronized (board) {
-            drawBlock(board.getFallingBlock(), canvas);
+            if (board.getFallingBlock() != null) {
+                drawBlock(board.getFallingBlock(), canvas);
+            }
             board.getFallenBlocks().forEach(b -> drawBlock(b, canvas));
 
             drawNextBlockPreview(canvas);

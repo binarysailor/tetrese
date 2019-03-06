@@ -1,4 +1,4 @@
-package binarysailor.tetrese.ui;
+package binarysailor.tetrese.ui.board;
 
 import android.view.MotionEvent;
 import android.view.View;
@@ -6,43 +6,44 @@ import android.view.View;
 import binarysailor.tetrese.model.Board;
 import binarysailor.tetrese.model.GameLifecycle;
 
-class TouchListener implements View.OnTouchListener {
+public class BoardTouchListener implements View.OnTouchListener {
 
-    private final Board board;
     private final GameLifecycle lifecycle;
-    private final TetreseView tetreseView;
+    private final BoardScene scene;
+    private final Board board;
 
-    public TouchListener(TetreseView view, Board board, GameLifecycle lifecycle) {
+    public BoardTouchListener(BoardScene scene, Board board, GameLifecycle lifecycle) {
+        this.scene = scene;
         this.board = board;
         this.lifecycle = lifecycle;
-        this.tetreseView = view;
     }
 
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
-        if (motionEvent.getAction() != MotionEvent.ACTION_DOWN) {
-            return false;
-        }
         switch (lifecycle.getState()) {
             case PLAYING:
                 return onTouchPlaying(view, motionEvent);
             case GAME_OVER:
                 return onTouchGameOver(view, motionEvent);
+            default:
+                return false;
         }
-        return true;
     }
 
     private boolean onTouchPlaying(View view, MotionEvent motionEvent) {
+        if (motionEvent.getAction() != MotionEvent.ACTION_DOWN) {
+            return false;
+        }
 
         float x = motionEvent.getX(0);
         float y = motionEvent.getY(0);
 
-        if (tetreseView.isCommunicationArea(x, y)) {
+        if (scene.isCommunicationArea(x, y)) {
             board.dropFallingBlock();
             return true;
         }
 
-        BoardQuarter quarter = tetreseView.resolveBoardQuarter(x, y);
+        BoardQuarter quarter = scene.resolveBoardQuarter(x, y);
         switch (quarter) {
             case NORTH:
                 board.tryRotateClockwise();
@@ -58,7 +59,7 @@ class TouchListener implements View.OnTouchListener {
     }
 
     private boolean onTouchGameOver(View view, MotionEvent motionEvent) {
-        board.startGame();
+        lifecycle.openMenu();
         return true;
     }
 }
