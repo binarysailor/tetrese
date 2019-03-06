@@ -1,5 +1,6 @@
 package binarysailor.tetrese.ui.board;
 
+import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.view.MotionEvent;
 import android.view.View;
@@ -17,11 +18,11 @@ public class BoardScene implements Scene, GameLifecycle.GameLifecycleListener {
     private GameOverRenderer gameOverRenderer;
     private View.OnTouchListener touchListener;
 
-    public BoardScene(Dimensions dimensions, GameLifecycle lifecycle) {
+    public BoardScene(Resources res, Dimensions dimensions, GameLifecycle lifecycle) {
         this.lifecycle = lifecycle;
         board = new Board(
                 dimensions.getWidthCells(), dimensions.getHeightCells(), new BlockFactory(), lifecycle);
-        boardRenderer = new BoardRenderer(board, dimensions);
+        boardRenderer = new BoardRenderer(res, board, dimensions);
         gameOverRenderer = new GameOverRenderer();
         touchListener = new BoardTouchListener(this, board, lifecycle);
         lifecycle.registerListener(this);

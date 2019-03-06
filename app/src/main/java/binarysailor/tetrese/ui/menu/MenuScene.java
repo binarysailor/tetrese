@@ -1,9 +1,11 @@
 package binarysailor.tetrese.ui.menu;
 
+import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.view.MotionEvent;
 import android.view.View;
 
+import binarysailor.tetrese.R;
 import binarysailor.tetrese.model.GameLifecycle;
 import binarysailor.tetrese.ui.Dimensions;
 import binarysailor.tetrese.ui.Scene;
@@ -14,12 +16,12 @@ public class MenuScene implements Scene {
     private final View.OnTouchListener touchListener;
     private final Menu menu;
 
-    public MenuScene(Dimensions dimensions, GameLifecycle lifecycle) {
+    public MenuScene(Resources res, Dimensions dimensions, GameLifecycle lifecycle) {
         MenuGraphicalObjects graphicalObjects = new MenuGraphicalObjects();
         this.menu = Menu.inPanel(dimensions.getSurfaceRect())
                 .withTextPaint(graphicalObjects.optionTextPaint)
-                .addOption(MenuAction.PLAY,"Play")
-                .addOption(MenuAction.OPTIONS, "Options")
+                .addOption(MenuAction.PLAY, res.getString(R.string.menu_play))
+                .addOption(MenuAction.OPTIONS, res.getString(R.string.menu_options))
                 .build();
         this.renderer = new MenuRenderer(dimensions, this.menu, graphicalObjects);
         this.touchListener = new MenuTouchListener(menu, lifecycle);

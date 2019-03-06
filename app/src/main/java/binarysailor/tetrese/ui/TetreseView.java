@@ -87,8 +87,8 @@ public class TetreseView extends SurfaceView implements SurfaceHolder.Callback, 
     private void initScenes(Rect surfaceFrame) {
         Dimensions dimensions = Dimensions.calculate(surfaceFrame);
 
-        this.boardScene = new BoardScene(dimensions, lifecycle);
-        this.menuScene = new MenuScene(dimensions, lifecycle);
+        this.boardScene = new BoardScene(getResources(), dimensions, lifecycle);
+        this.menuScene = new MenuScene(getResources(), dimensions, lifecycle);
 
         lifecycle.openMenu();
     }

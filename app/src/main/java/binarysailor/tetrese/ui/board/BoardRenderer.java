@@ -1,11 +1,13 @@
 package binarysailor.tetrese.ui.board;
 
+import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.util.Log;
 
+import binarysailor.tetrese.R;
 import binarysailor.tetrese.model.Block;
 import binarysailor.tetrese.model.Board;
 import binarysailor.tetrese.ui.Dimensions;
@@ -13,15 +15,17 @@ import binarysailor.tetrese.ui.Dimensions;
 class BoardRenderer {
     private final Board board;
     private final Dimensions dimensions;
+    private final Resources resources;
 
     private final Paint blockPaint;
     private final Paint backgroundPaint;
     private final Paint borderPaint;
     private final Paint textPaint;
 
-    BoardRenderer(Board board, Dimensions dimensions) {
+    BoardRenderer(Resources res, Board board, Dimensions dimensions) {
         this.board = board;
         this.dimensions = dimensions;
+        this.resources = res;
 
         this.blockPaint = new Paint();
         this.backgroundPaint = new Paint();
@@ -41,8 +45,8 @@ class BoardRenderer {
                 dimensions.getCellSize() * dimensions.getWidthCells(), clipBounds.bottom,
                 borderPaint);
         int textY = clipBounds.bottom - 10;
-        canvas.drawText("Score: " + board.getScore(), 10, textY, textPaint);
-        canvas.drawText("Next: ", clipBounds.width() - 300, textY, textPaint);
+        canvas.drawText( resources.getString(R.string.board_score) + ": " + board.getScore(), 10, textY, textPaint);
+        canvas.drawText(resources.getString(R.string.board_next) + ": ", clipBounds.width() - 300, textY, textPaint);
 
         synchronized (board) {
             if (board.getFallingBlock() != null) {

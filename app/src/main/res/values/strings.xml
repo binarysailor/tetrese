@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Tetrese</string>
+    <string name="board_score">Score</string>
+    <string name="board_next">Next</string>
+    <string name="menu_play">Play</string>
+    <string name="menu_options">Options</string>
 </resources>
